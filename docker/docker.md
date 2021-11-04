@@ -11,6 +11,7 @@
                   docker-latest-logrotate \
                   docker-logrotate \
                   docker-engine
+                  注意要是原来没有安装过docker 这个可以直接跳过
 ```
 
 ### 2.设置docker的源：
@@ -18,7 +19,6 @@
 ```shell
 
 $ sudo yum install -y yum-utils
-
 $ sudo yum-config-manager \
     --add-repo \
     https://download.docker.com/linux/centos/docker-ce.repo
@@ -61,7 +61,7 @@ sudo systemctl restart docker
 
 #### 4.2 Centos7加速器
 
-```
+```shell
 
 sudo mkdir -p /etc/docker
 sudo tee /etc/docker/daemon.json <<-'EOF'
@@ -71,11 +71,12 @@ sudo tee /etc/docker/daemon.json <<-'EOF'
 EOF
 sudo systemctl daemon-reload
 sudo systemctl restart docker
+sudo systemctl status docker
 ```
 
 注意事项：
 
-​	最好使用Ubuntu进行安装主要是卷的处理不好centos
+​	最好使用Ubuntu进行安装主要是     存储的处理不好centos
 
 **配置网络yum文件**
 
@@ -91,14 +92,14 @@ sed -i -e '/mirrors.cloud.aliyuncs.com/d' -e '/mirrors.aliyuncs.com/d' /etc/yum.
 
 服务的开启和关闭
 
-```
- sudo systemctl enable docker.service
-$ sudo systemctl enable containerd.service
+```shell
+  sudo systemctl enable docker.service
+  sudo systemctl enable containerd.service
 ```
 
 设置开机不启动
 
-```
+```shell
 $ sudo systemctl disable docker.service
 $ sudo systemctl disable containerd.service
 ```
@@ -115,14 +116,11 @@ $ sudo systemctl disable containerd.service
 WARNING: bridge-nf-call-iptables is disabled 
 WARNING: bridge-nf-call-ip6tables is disabled 
 
+
 添加内核配置参数以启用这些功能。 
-
 $ sudo tee -a /etc/sysctl.conf <<-EOF 
-
 net.bridge.bridge-nf-call-ip6tables = 1 
-
 net.bridge.bridge-nf-call-iptables = 1 
-
 EOF
 ```
 
@@ -204,8 +202,6 @@ exited（停止）
 dead（死亡）
 PORTS: 容器的端口信息和使用的连接类型（tcp\udp）。
 NAMES: 自动分配的容器名称。
-
-
 ```
 
 ### 查看容器内的标准输出
@@ -276,10 +272,8 @@ ubuntu       15.10     9b9cb95443b5   5 years ago   137MB
 
 **容器的创建**
 
-​	启动一个交互式容器	
-
 ```shell
-[root@localhost ~]# docker run -it ubuntu /bin/bash 
+[root@localhost ~]# docker run -it ubuntu /bin/bash      启动一个交互式容器
 root@19094a8d30bd:/# 
 root@19094a8d30bd:/# uname -a 
 Linux 19094a8d30bd 3.10.0-862.el7.x86_64 #1 SMP Fri Apr 20 16:44:24 UTC 2018 x86_64 x86_64 x86_64 GNU/Linux
@@ -290,7 +284,7 @@ exit
 
 ​	
 
-**容器的启动**
+**查看已经启动的容器**
 
 ```
 [root@localhost ~]# docker ps -a 
@@ -336,7 +330,7 @@ CONTAINER ID   IMAGE          COMMAND                  CREATED          STATUS  
 **容器后台运行**
 
 ```shell
-[root@localhost ~]# docker run -itd --name cnetos7 centos /bin/bash 
+[root@localhost ~]# docker run -itd --name cnetos7 centos /bin/bash      -d 就是后台进行运行
 9b9a703785ada314cfc8adb9b4498ee7e7be1ffac8bfb6ef534f545977e450fe
 [root@localhost ~]# docker ps -a 
 CONTAINER ID   IMAGE          COMMAND                  CREATED          STATUS                        PORTS     NAMES
@@ -350,7 +344,7 @@ CONTAINER ID   IMAGE          COMMAND                  CREATED          STATUS  
 
 **进入容器**
 
-​	**attach**    输入exit容器就死亡
+​	**attach**    输入exit容器就死亡    docker attach centos    exit   这样容器出来就会死亡
 
 ```shell
 [root@localhost ~]# docker attach 9b9a703785ad
@@ -361,12 +355,12 @@ Linux 9b9a703785ad 3.10.0-862.el7.x86_64 #1 SMP Fri Apr 20 16:44:24 UTC 2018 x86
 [root@9b9a703785ad /]# 
 ```
 
-​	**exec**    退出后容器还是会运行
+​	**exec**    退出后容器还是会运行    
 
 ```shell
 [root@localhost ~]# docker exec -it 9b9a703785ad /bin/bash 
 [root@9b9a703785ad /]# 
-ctrl+p ctrl+q 直接完成后台运行
+ctrl+p ctrl+q 直接完成后台运行   
 ```
 
 **导入和导出容器**
@@ -504,8 +498,6 @@ training/webapp   latest    6fae60ef3446   6 years ago      349MB
 
 国外仓库：https://hub.docker.com/
 
-账户： xiaozhe0514  Wenzhe051427
-
 
 
 **获取新的系统镜像**
@@ -576,7 +568,6 @@ AUTOMATED: 自动构建。
 [root@localhost ~]# docker run -itd --name httpd -P httpd 
 WARNING: IPv4 forwarding is disabled. Networking will not work.
 71e6af27fae915315eec41e49ba5d04a7199b6978413268a89d58ed2f9bf4805
-[root@localhost ~]# 
 [root@localhost ~]# 
 ```
 
@@ -762,7 +753,7 @@ training/webapp   latest    6fae60ef3446   6 years ago      349MB
 ubuntu            13.10     7f020f7bf345   7 years ago      185MB
 [root@localhost ~]# 
 批量删除容器
-[root@localhost ~]# docker rmi $(docker images)
+[root@localhost ~]# docker rmi $(docker images -q)    批量删除文件
 Untagged: ubunut:v3
 Deleted: sha256:406f1f43626a2ff68391ee97d32225555fc9143aa14702afa649ecd765b960d4
 Deleted: sha256:ebb73f03995e20983873dba4d8654c0cca172023903685a36359981dbf058cae
@@ -799,8 +790,8 @@ REPOSITORY   TAG       IMAGE ID   CREATED   SIZE
 
 使用外部网络进行容器的访问大p和小p之间是不同的操作
 
-- **-P :**是容器内部端口**随机**映射到主机的高端口。
-- **-p :** 是容器内部端口绑定到**指定**的主机端口。
+- **-P : ** 容器内部端口**随机**映射到主机的高端口。
+- **-p :** 容器内部端口绑定到**指定**的主机端口。
 
 **端口映射并不是唯一把 docker 连接到另一个容器的方法。**
 
@@ -832,8 +823,8 @@ Get:3 http://security.ubuntu.com/ubuntu focal-security/main amd64 Packages [1167
 Get:4 http://archive.ubuntu.com/ubuntu focal-updates InRelease [114 kB]
 Get:5 http://archive.ubuntu.com/ubuntu focal-backports InRelease [101 kB]
 Get:6 http://archive.ubuntu.com/ubuntu focal/main amd64 Packages [1275 kB]
-Get:7 http://security.ubuntu.com/ubuntu focal-security/multiverse amd64 Packages [30.1 kB]                                                                                
-Get:8 http://security.ubuntu.com/ubuntu focal-security/restricted amd64 Packages [618 kB]                                                                                 
+Get:7 http://security.ubuntu.com/ubuntu focal-security/multiverse amd64 Packages [30.1 kB]                                                                            
+Get:8 http://security.ubuntu.com/ubuntu focal-security/restricted amd64 Packages [618 kB]                                                                               
 Get:9 http://archive.ubuntu.com/ubuntu focal/restricted amd64 Packages [33.4 kB]                                                                                          
 Get:10 http://archive.ubuntu.com/ubuntu focal/multiverse amd64 Packages [177 kB]                                                                                          
 Get:11 http://security.ubuntu.com/ubuntu focal-security/universe amd64 Packages [801 kB]                                                                                  
@@ -900,13 +891,11 @@ PING test2 (172.18.0.3) 56(84) bytes of data.
 3 packets transmitted, 3 received, 0% packet loss, time 2084ms
 rtt min/avg/max/mdev = 0.052/0.217/0.529/0.220 ms
 root@c12a3ac8dcb7:/# 
-
-
 ```
 
 
 
-**docker port 命令可以让我们快捷地查看端口的绑定情**
+**docker port 命令可以让我们快捷地查看端口的绑定**
 
 ```shell
 [root@localhost ~]# docker pull nginx 
@@ -1011,7 +1000,6 @@ docker stop 停止容器
 $() 返回在括号内运行脚本的结果
 docker ps -a 列出所有容器的docker
 | awk '{print $1}' 管道的结果grep搜索到的awk命令，该命令被告知仅打印在第1列，其是容器的ID的值
-
 ```
 
 
@@ -1097,14 +1085,14 @@ $ sudo service docker start
 addr 和 ip route 命令来查看 IP 地址配置和路由信息。
 ```
 
-**记住只有删除容器才会清楚所有数据**
+**记住只有删除容器才会清楚所有数据**镜像和容器之间是绑定的   容器就是镜像的动态的操作
 
 
 
 获取某个容器的pid
 
-```
-docker inspect --format '{{ .State.Pid }}' 
+```shell
+docker inspect --format '{{ .State.Pid }}'   格式是固定的
 ```
 
 查看容器内的IP地址：
@@ -1116,10 +1104,6 @@ docker inspect --format '{{ .NetworkSettings.IPAddress }}'  nginx
 按 Ctrl-p     Ctrl-q 。如果按 Ctrl-c 往往会让容器内应用进程终止，进而 会终止容器。
 
 
-
-
-
-## Docker安装
 
 **容器的生命周期**
 
@@ -1148,13 +1132,11 @@ docker inspect --format '{{ .NetworkSettings.IPAddress }}'  nginx
 
   
 
-容器的启动停止退出
+容器的  启动   停止   退出
 
 ```shell
 docker start:启动一个或多个已经被停止的容器
-
 docker stop:停止一个运行中的容器
-
 docker restart:重启容器
 ```
 
@@ -1208,12 +1190,12 @@ docker exec -it nginx01 /bin/bash
 
 ```shell
 docker exec ：在运行的容器中执行命令
-
+docker exec -it nginx /bin/bash 
 ```
 
 **容器的操作**
 
-ps
+docker ps -a s
 
 - ```shell
   -a :显示所有的容器，包括未运行的。
@@ -1232,7 +1214,6 @@ ps
 
   - ```
     状态有7种：
-    
     - created（已创建）
     - restarting（重启中）
     - running（运行中）
@@ -1242,7 +1223,7 @@ ps
     - dead（死亡）
     
     ```
-
+    
     
 
 inspect
@@ -1311,12 +1292,6 @@ docker wait : 阻塞运行直到容器停止，然后打印出它的退出代码
 
 ```
 
-
-
-export
-
-
-
 **port**
 
 ```shell
@@ -1328,9 +1303,7 @@ docker port :列出指定的容器的端口映射，或者查找将PRIVATE_PORT 
 [root@xiaozhe0514 ~]# 
 ```
 
-**容器的rootfs命令**
 
-commit
 
 **docker commit :**从容器创建一个新的镜像。 把容器打包成镜像  制作进行提交镜像
 
@@ -1358,15 +1331,9 @@ cp
 
 diff
 
-
-
 docker diff : 检查容器里文件结构的更改。
 
-
-
 镜像仓库
-
-
 
 pull
 
@@ -1443,11 +1410,7 @@ docker history : 查看指定镜像的创建历史。
 -q :仅列出提交记录ID。
 ```
 
-
-
 save 
-
-
 
 ```shell
 docker save : 将指定镜像保存成 tar 归档文件。
@@ -1465,9 +1428,6 @@ load
   --quiet , -q :** 精简输出信息。
   ```
 
-  
-
-
 
 import
 
@@ -1482,28 +1442,23 @@ import
 
 ```shell
 docker info : 显示 Docker 系统信息，包括镜像和容器数。
-
 docker version :显示 Docker 版本信息。
 ```
 
 
 
-
-
 ## **Docker实例进行安装部署**
 
-
-
 ```shell
-docker run -itd --name ubuntu-test ubuntu
+ docker run -itd --name ubuntu-test ubuntu
 ```
 
 ```shell
-docker run -itd --name centos-test centos:centos7
+ docker run -itd --name centos-test centos:centos7
 ```
 
 ```shell
-docker run --name nginx-test -p 8080:80 -d nginx
+ docker run --name nginx-test -p 8080:80 -d nginx
 ```
 
 ```shell
@@ -1511,11 +1466,11 @@ docker run --name nginx-test -p 8080:80 -d nginx
 ```
 
 ```shell
-docker run --name  myphp-fpm -v ~/nginx/www:/www  -d php:5.6-fpm
+ docker run --name  myphp-fpm -v ~/nginx/www:/www  -d php:5.6-fpm
 ```
 
 ```shell
-docker run -itd --name mysql-test -p 3306:3306 -e MYSQL_ROOT_PASSWORD=123456 mysql
+ docker run -itd --name mysql-test -p 3306:3306 -e MYSQL_ROOT_PASSWORD=123456 mysql
 ```
 
 ```shell
@@ -1523,7 +1478,7 @@ docker run -itd --name mysql-test -p 3306:3306 -e MYSQL_ROOT_PASSWORD=123456 mys
 ```
 
 ```shell
-docker run -itd --name mongo -p 27017:27017 mongo --auth
+ docker run -itd --name mongo -p 27017:27017 mongo --auth
 ```
 
 
