@@ -1481,5 +1481,11 @@ docker version :显示 Docker 版本信息。
  docker run -itd --name mongo -p 27017:27017 mongo --auth
 ```
 
+docker中里面是一个容器只能运行一个服务  nginx 使用C语言进行编写的
+
+
+
+
+
 
 
