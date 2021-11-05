@@ -1593,15 +1593,63 @@ Docker中的网络默认使用虚拟接口。   虚拟接口最大效率就是�
 
 
 
+docker中可以通过--net指定容器的网络配置
+
+可选四种：
+
+```dockerfile
+--net  bridge     默认在docker网桥上为容器创建新的网络栈
+--net  host    直接使用本地主机网络  只要保证每个网络之间可以进行三层通信
+--privileged=true  容器甚至全被允许直接配置主机的网络栈
+--net container    将新创建容器的进程放到一个已存在容器的网络栈中
+--net none    让docker将新容器放到隔离的网络栈中   不会对容器进行网络的配置
+```
 
 
 
 
 
+### 容器中网络的演示;
+
+```shell
+[root@server01 docker]# docker run -itd --name nginx -P nginx 
+81af3a1af2b7c9c08699294360aa977414fd35d42284e59f0eeaab026599cad7
+[root@server01 docker]# docker ps -a 
+CONTAINER ID   IMAGE                COMMAND                  CREATED         STATUS         PORTS                                       NAMES
+81af3a1af2b7   nginx                "/docker-entrypoint.…"   3 seconds ago   Up 2 seconds   0.0.0.0:49157->80/tcp, :::49157->80/tcp     nginx
+dfe7edab0ed0   uifd/ui-for-docker   "/ui-for-docker"         3 hours ago     Up 3 hours     0.0.0.0:9000->9000/tcp, :::9000->9000/tcp   boring_ramanujan
+[root@server01 docker]# 
 
 
 
+```
 
+### 查看网络命名空间的命令
+
+```shell
+[root@server01 ~]# ip netns help 
+Usage: ip netns list
+       ip netns add NAME
+       ip netns set NAME NETNSID
+       ip [-all] netns delete [NAME]
+       ip netns identify [PID]
+       ip netns pids NAME
+       ip [-all] netns exec [NAME] cmd ...
+       ip netns monitor
+       ip netns list-id
+[root@server01 ~]# 
+
+案例：
+[root@server01 ~]# ip netns add test1   创建
+[root@server01 ~]# ip netns add test2   创建  
+[root@server01 ~]# ip netns ls    查看  
+test2
+test1
+[root@server01 ~]# ip -all netns del   全部进行删除 
+[root@server01 ~]# ip netns ls    再次查看命名空间
+[root@server01 ~]# 
+
+```
 
 
 
